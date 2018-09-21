@@ -20,6 +20,7 @@ curl -i -X GET http://host:4500/reload
 ##Todo
 - allow an automated periodic application refresh to be configured (do a git pull every X seconds) 
 - allow a GitHub WebHook signal to be handled
+- use https://www.npmjs.com/package/simple-git instead of shelljs plus local Git client (this could allow usage of a lighter base image - e.g. node-slim)
 
 ##Tips
 Some useful commands (I keep forgetting):
