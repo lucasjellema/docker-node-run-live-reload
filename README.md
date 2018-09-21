@@ -27,4 +27,5 @@ Some useful commands (I keep forgetting):
 
 ```
 docker logs nodea-app --follow
+docker exec -it node-app /bin/sh
 ```
