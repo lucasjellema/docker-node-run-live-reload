@@ -1,5 +1,6 @@
 #!/bin/sh
 CONTAINER_ALREADY_STARTED="CONTAINER_ALREADY_STARTED_PLACEHOLDER"
+TARGET_DIR=${APPLICATION_ROOT_DIRECTORY-''}
 if [ ! -e $CONTAINER_ALREADY_STARTED ]; then
     touch $CONTAINER_ALREADY_STARTED
     echo "-- First container startup --"
@@ -8,21 +9,21 @@ if [ ! -e $CONTAINER_ALREADY_STARTED ]; then
     # prepare the actual Node app from GitHub
     mkdir app
     git clone $GITHUB_URL app
-    cd app
+    cd app/$TARGET_DIR
     #install dependencies for the Node app
     npm install
     #start  both the reload app (in the background) and (using nodemon) the actual Node app
     cd ..
     echo "starting reload app and nodemon"
     (echo "start reload";npm start; echo "reload app finished") & 
-    cd app; 
+    cd app/$TARGET_DIR; 
     echo "starting nodemon for app cloned from $GITHUB_URL";
     nodemon
 else
     echo "-- Not first container startup --"
     cd /tmp
     (echo "start reload";npm start; echo "reload app finished") &
-    cd app; 
+    cd app/$TARGET_DIR; 
     echo "starting nodemon for app cloned from $GITHUB_URL";
     nodemon
 fi
