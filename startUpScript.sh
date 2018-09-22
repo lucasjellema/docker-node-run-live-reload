@@ -9,7 +9,7 @@ if [ ! -e $CONTAINER_ALREADY_STARTED ]; then
     # prepare the actual Node app from GitHub
     mkdir app
     git clone $GITHUB_URL app
-    echo 'GIT repo was cloned to /tmp/app/${!TARGET_DIR}'
+    echo "GIT repo was cloned to /tmp/app/${TARGET_DIR}"
     cd /tmp/app/$TARGET_DIR
     #install dependencies for the Node app
     npm install
@@ -18,14 +18,14 @@ if [ ! -e $CONTAINER_ALREADY_STARTED ]; then
     echo "starting reload app and nodemon"
     (echo "start reload";npm start; echo "reload app finished") & 
     cd /tmp/app/$TARGET_DIR; 
-    echo "starting nodemon for app cloned from $GITHUB_URL in /tmp/app/${!TARGET_DIR}";
+    echo "starting nodemon for app cloned from $GITHUB_URL in /tmp/app/${TARGET_DIR}";
     nodemon
 else
     echo "-- Not first container startup --"
     cd /tmp
     (echo "start reload";npm start; echo "reload app finished") &
     cd /tmp/app/$TARGET_DIR; 
-    echo "starting nodemon for app cloned from $GITHUB_URL in directory /tmp/app/${!TARGET_DIR}";
+    echo "starting nodemon for app cloned from $GITHUB_URL in directory /tmp/app/${TARGET_DIR}";
     nodemon
 fi
 
