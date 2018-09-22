@@ -7,16 +7,16 @@ A GitHub WebHook can be configured for the endpoint host:4500/github/push. When 
 
 To build:
 ```
-docker build -t "node-run-live-reload:0.4.2" .
+docker build -t "node-run-live-reload:0.4.3" .
 ```
 To run:
 ```
-docker run --name node-app -p 3006:3001 -p 4500:4500  -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d node-run-live-reload:0.4.2
+docker run --name node-app -p 3006:3001 -p 4500:4500  -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d node-run-live-reload:0.4.3
 ````
 Note: when the package.json is in a different directory from the root of the Git Repo, you can set the target direcory using the environment variable APPLICATION_ROOT_DIRECTORY. For example, if package.json is in /logistics-ms, the docker run command will be:
 
 ```
-docker run --name node-app -p 3006:3001 -p 4500:4500  -e APPLICATION_ROOT_DIRECTORY=logistics-ms -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d node-run-live-reload:0.4.2
+docker run --name node-app -p 3006:3001 -p 4500:4500  -e APPLICATION_ROOT_DIRECTORY=logistics-ms -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d node-run-live-reload:0.4.3
 ````
 
 
@@ -27,7 +27,7 @@ To reload the application:
 curl -i -X GET http://host:4500/reload
 ```
 
-Note: the Docker Container image based on this repo is published on Docker Hub as: lucasjellema/node-run-live-reload:0.4.2
+Note: the Docker Container image based on this repo is published on Docker Hub as: lucasjellema/node-run-live-reload:0.4.3
 
 ##Todo
 - allow an automated periodic application refresh to be configured (do a git pull every X seconds) 
@@ -40,8 +40,8 @@ Some useful commands (I keep forgetting):
 docker logs nodea-app --follow
 docker exec -it node-app /bin/sh
 
-docker tag node-run-live-reload:0.4.2 lucasjellema/node-run-live-reload:0.4.2
+docker tag node-run-live-reload:0.4.3 lucasjellema/node-run-live-reload:0.4.3
 docker push lucasjellema/node-run-live-reload:0.3
 
-docker  run --name node-app -p 3006:3001 -p 4500:4500  -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d lucasjellema/node-run-live-reload:0.4.2
+docker  run --name node-app -p 3006:3001 -p 4500:4500  -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d lucasjellema/node-run-live-reload:0.4.3
 ```
