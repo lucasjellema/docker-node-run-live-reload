@@ -13,6 +13,12 @@ To run:
 ```
 docker run --name node-app -p 3006:3001 -p 4500:4500  -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d node-run-live-reload:0.3
 ````
+Note: when the package.json is in a different directory from the root of the Git Repo, you can set the target direcory using the environment variable APPLICATION_ROOT_DIRECTORY. For example, if package.json is in /logistics-ms, the docker run command will be:
+
+```
+docker run --name node-app -p 3006:3001 -p 4500:4500  -e APPLICATION_ROOT_DIRECTORY=logistics-ms -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d node-run-live-reload:0.3
+````
+
 
 in this example, the node application cloned from GitHub exposes port 3001.
 
