@@ -24,11 +24,13 @@ var server = http.createServer(function (request, response) {
     else if (request.method === 'POST' && request.url === GITHUB_WEBHOOK_PATH) {
         console.log(`GitHub WebHook event handling starting ${new Date().toISOString()}...`);
         var githubEvent = request.body
+        console.log(`github event: ${JSON.stringify(githubEvent)}`)
         // - githubEvent.head_commit is the last (and frequently the only) commit
         // - githubEvent.pusher is the user of the pusher pusher.name and pusher.email
         // - timestamp of final commit: githubEvent.head_commit.timestamp
         // - branch:  githubEvent.ref (refs/heads/master)
-
+        var push ={"default":"dummy"}
+        try {
         var commits = {}
         if (githubEvent.commits)
             commits = githubEvent.commits.reduce(
@@ -40,7 +42,7 @@ var server = http.createServer(function (request, response) {
                 }
                 , { "messages": "", "filesTouched": [] })
 
-        var push = {
+           push = {
             "finalCommitIdentifier": githubEvent.after,
             "pusher": githubEvent.pusher,
             "timestamp": githubEvent.head_commit.timestamp,
@@ -53,7 +55,10 @@ var server = http.createServer(function (request, response) {
             console.log("This commit involves changes to the Node application, so let's perform a git pull ")
             refreshAppFromGit();
         }
-       
+    } catch (e) {
+        console.error("GitHub WebHook handling failed with error "+e)
+    }
+
         var response = push
         response.json(response)
         console.log(`GitHub WebHook event handling complete at ${new Date().toISOString()}`);
