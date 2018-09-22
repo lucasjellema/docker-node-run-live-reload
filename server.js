@@ -22,14 +22,20 @@ var server = http.createServer(function (request, response) {
         console.log('reload request handled...');
     } 
     else if (request.method === 'POST' && request.url === GITHUB_WEBHOOK_PATH) {
+        let body = [];
+        request.on('data', (chunk) => {
+            body.push(chunk);
+          }).on('end', () => {
+            body = Buffer.concat(body).toString();
+            // at this point, `body` has the entire request body stored in it as a string
+          
         console.log(`GitHub WebHook event handling starting ${new Date().toISOString()}...`);
-        var githubEvent = request.body
-        console.log(`github event: ${JSON.stringify(githubEvent)}`)
+        var githubEvent = JSON.parse(body)
+        console.debug(`github event: ${JSON.stringify(githubEvent)}`)
         // - githubEvent.head_commit is the last (and frequently the only) commit
         // - githubEvent.pusher is the user of the pusher pusher.name and pusher.email
         // - timestamp of final commit: githubEvent.head_commit.timestamp
         // - branch:  githubEvent.ref (refs/heads/master)
-        var push ={"default":"dummy"}
         try {
         var commits = {}
         if (githubEvent.commits)
@@ -42,7 +48,7 @@ var server = http.createServer(function (request, response) {
                 }
                 , { "messages": "", "filesTouched": [] })
 
-           push = {
+           var push = {
             "finalCommitIdentifier": githubEvent.after,
             "pusher": githubEvent.pusher,
             "timestamp": githubEvent.head_commit.timestamp,
@@ -59,9 +65,10 @@ var server = http.createServer(function (request, response) {
         console.error("GitHub WebHook handling failed with error "+e)
     }
 
-        var response = push
-        response.json(response)
+        response.write('handled');
+        response.end();
         console.log(`GitHub WebHook event handling complete at ${new Date().toISOString()}`);
+    });
     }
     else {
         // respond
