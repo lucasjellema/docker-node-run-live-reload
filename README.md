@@ -17,6 +17,8 @@ To reload the application:
 curl -i -X GET http://host:4500/reload
 ```
 
+Note: the Docker Container image based on this repo is published on Docker Hub as: lucasjellema/node-run-live-reload:0.1
+
 ##Todo
 - allow an automated periodic application refresh to be configured (do a git pull every X seconds) 
 - allow a GitHub WebHook signal to be handled
@@ -27,4 +29,10 @@ Some useful commands (I keep forgetting):
 
 ```
 docker logs nodea-app --follow
+docker exec -it node-app /bin/sh
+
+docker tag node-run-live-reload:0.1 lucasjellema/node-run-live-reload:0.1
+docker push lucasjellema/node-run-live-reload:0.1
+
+docker  run --name node-app -p 3006:3001 -p 4500:4500  -e GITHUB_URL=https://github.com/lucasjellema/example-prometheus-nodejs -d lucasjellema/node-run-live-reload:0.1
 ```
