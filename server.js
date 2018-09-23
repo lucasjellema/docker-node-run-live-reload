@@ -20,55 +20,55 @@ var server = http.createServer(function (request, response) {
         response.write(`RELOADED!!${new Date().toISOString()}`);
         response.end();
         console.log('reload request handled...');
-    } 
+    }
     else if (request.method === 'POST' && request.url === GITHUB_WEBHOOK_PATH) {
         let body = [];
         request.on('data', (chunk) => {
             body.push(chunk);
-          }).on('end', () => {
+        }).on('end', () => {
             body = Buffer.concat(body).toString();
             // at this point, `body` has the entire request body stored in it as a string
-          
-        console.log(`GitHub WebHook event handling starting ${new Date().toISOString()}...`);
-        var githubEvent = JSON.parse(body)
-        console.debug(`github event: ${JSON.stringify(githubEvent)}`)
-        // - githubEvent.head_commit is the last (and frequently the only) commit
-        // - githubEvent.pusher is the user of the pusher pusher.name and pusher.email
-        // - timestamp of final commit: githubEvent.head_commit.timestamp
-        // - branch:  githubEvent.ref (refs/heads/master)
-        try {
-        var commits = {}
-        if (githubEvent.commits)
-            commits = githubEvent.commits.reduce(
-                function (agg, commit) {
-                    agg.messages = agg.messages + commit.message + ";"
-                    agg.filesTouched = agg.filesTouched.concat(commit.added).concat(commit.modified).concat(commit.removed)
-                    //                        .filter(file => file.indexOf("src/js/jet-composites/input-country") > -1)
-                    return agg
+
+            console.log(`GitHub WebHook event handling starting ${new Date().toISOString()}...`);
+            var githubEvent = JSON.parse(body)
+            console.debug(`github event: ${JSON.stringify(githubEvent)}`)
+            // - githubEvent.head_commit is the last (and frequently the only) commit
+            // - githubEvent.pusher is the user of the pusher pusher.name and pusher.email
+            // - timestamp of final commit: githubEvent.head_commit.timestamp
+            // - branch:  githubEvent.ref (refs/heads/master)
+            try {
+                var commits = {}
+                if (githubEvent.commits)
+                    commits = githubEvent.commits.reduce(
+                        function (agg, commit) {
+                            agg.messages = agg.messages + commit.message + ";"
+                            agg.filesTouched = agg.filesTouched.concat(commit.added).concat(commit.modified).concat(commit.removed)
+                            //                        .filter(file => file.indexOf("src/js/jet-composites/input-country") > -1)
+                            return agg
+                        }
+                        , { "messages": "", "filesTouched": [] })
+
+                var push = {
+                    "finalCommitIdentifier": githubEvent.after,
+                    "pusher": githubEvent.pusher,
+                    "timestamp": githubEvent.head_commit.timestamp,
+                    "branch": githubEvent.ref,
+                    "finalComment": githubEvent.head_commit.message,
+                    "commits": commits
                 }
-                , { "messages": "", "filesTouched": [] })
+                console.log("WebHook Push Event: " + JSON.stringify(push))
+                if (push.commits.filesTouched.length > 0) {
+                    console.log("This commit involves changes to the Node application, so let's perform a git pull ")
+                    refreshAppFromGit();
+                }
+            } catch (e) {
+                console.error("GitHub WebHook handling failed with error " + e)
+            }
 
-           var push = {
-            "finalCommitIdentifier": githubEvent.after,
-            "pusher": githubEvent.pusher,
-            "timestamp": githubEvent.head_commit.timestamp,
-            "branch": githubEvent.ref,
-            "finalComment": githubEvent.head_commit.message,
-            "commits": commits
-        }
-        console.log("WebHook Push Event: " + JSON.stringify(push))
-        if (push.commits.filesTouched.length > 0) {
-            console.log("This commit involves changes to the Node application, so let's perform a git pull ")
-            refreshAppFromGit();
-        }
-    } catch (e) {
-        console.error("GitHub WebHook handling failed with error "+e)
-    }
-
-        response.write('handled');
-        response.end();
-        console.log(`GitHub WebHook event handling complete at ${new Date().toISOString()}`);
-    });
+            response.write('handled');
+            response.end();
+            console.log(`GitHub WebHook event handling complete at ${new Date().toISOString()}`);
+        });
     }
     else {
         // respond
@@ -90,7 +90,7 @@ function refreshAppFromGit() {
     try {
         if (shell.exec('./gitRefresh.sh').code !== 0) {
             shell.echo('Error: Git Pull failed');
-//            shell.exit(1);
+            //            shell.exit(1);
         } else {
             //        shell.exec('npm install')
             //  shell.exit(0);
