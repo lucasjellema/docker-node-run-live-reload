@@ -19,13 +19,21 @@ if [ ! -e $CONTAINER_ALREADY_STARTED ]; then
     (echo "start reload";npm start; echo "reload app finished") & 
     cd /tmp/app/$TARGET_DIR; 
     echo "starting nodemon for app cloned from $GITHUB_URL in /tmp/app/${TARGET_DIR}";
-    nodemon
+    if [ ! -z $APP_STARTUP ]; then
+        nodemon /tmp/app/$TARGET_DIR/$APP_STARTUP
+    else
+        nodemon
+    fi
 else
     echo "-- Not first container startup --"
     cd /tmp
     (echo "start reload";npm start; echo "reload app finished") &
     cd /tmp/app/$TARGET_DIR; 
     echo "starting nodemon for app cloned from $GITHUB_URL in directory /tmp/app/${TARGET_DIR}";
-    nodemon
+    if [ ! -z $APP_STARTUP ]; then
+        nodemon /tmp/app/$TARGET_DIR/$APP_STARTUP
+    else
+        nodemon
+    fi
 fi
 
